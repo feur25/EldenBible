@@ -77,8 +77,8 @@ load_css('./css/styles.css')
 with st.sidebar:
     selected = option_menu(
         "Elden Bible",
-        ["Introduction", "Average Damage by Weapon Type", "Weight vs Physical Damage", "Boss Elden Ring", "Dlc Content", "Ending"],
-        icons=["info-circle", "bar-chart", "bar-chart-line", "list-task", "book", "pause"],
+        ["Introduction", "Statistiques", "Elden Vanilla", "Ending"],
+        icons=["info-circle", "bar-chart", "book", "pause"],
         menu_icon="cast",
         default_index=0,
     )
@@ -99,128 +99,170 @@ if selected == "Introduction":
     - Game Guides: Tips and strategies to defeat the toughest bosses and progress efficiently in the game.
 
     Whether you are a new player or a veteran, this application is designed to enrich your gaming experience. We wish you the best of luck in your adventure and hope you find these tools useful in becoming a true Elden Lord!
-
     """)
 
-elif selected == "Average Damage by Weapon Type":
-    st.title("Average Damage by Weapon Type")
+elif selected == "Statistiques":
+    stats_selected = st.selectbox(
+        "Select a statistic to view",
+        ["Average Damage by Weapon Type", "Weight vs Physical Damage", "Boss Elden Ring", "Dlc Content"]
+    )
 
-    st.subheader("Choose Damage Category:")
-    damage_category = st.radio("Select Damage Category", ["Physical", "Magic", "Holy"])
+    if stats_selected == "Average Damage by Weapon Type":
+        st.title("Average Damage by Weapon Type")
+        st.subheader("Choose Damage Category:")
+        damage_category = st.radio("Select Damage Category", ["Physical", "Magic", "Holy"])
 
-    if damage_category == "Physical":
-        st.header("Top 5 Weapons - Physical Damage")
-        weapons['Phy'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Phy'), 0))
-        top_weapons = weapons.sort_values(by='Phy', ascending=False).head(5)
-    elif damage_category == "Magic":
-        st.header("Top 5 Weapons - Magic Damage")
-        weapons['Mag'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Mag'), 0))
-        top_weapons = weapons.sort_values(by='Mag', ascending=False).head(5)
-    elif damage_category == "Holy":
-        st.header("Top 5 Weapons - Holy Damage")
-        weapons['Hol'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Holy'), 0))
-        top_weapons = weapons.sort_values(by='Hol', ascending=False).head(5)
+        if damage_category == "Physical":
+            st.header("Top 5 Weapons - Physical Damage")
+            weapons['Phy'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Phy'), 0))
+            top_weapons = weapons.sort_values(by='Phy', ascending=False).head(5)
+        elif damage_category == "Magic":
+            st.header("Top 5 Weapons - Magic Damage")
+            weapons['Mag'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Mag'), 0))
+            top_weapons = weapons.sort_values(by='Mag', ascending=False).head(5)
+        elif damage_category == "Holy":
+            st.header("Top 5 Weapons - Holy Damage")
+            weapons['Hol'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Holy'), 0))
+            top_weapons = weapons.sort_values(by='Hol', ascending=False).head(5)
 
-    cols = st.columns(5)
-    for i, weapon in enumerate(top_weapons.iterrows()):
-        with cols[i]:
-            st.image(weapon[1]['image'], caption=weapon[1]['name'])
-            st.text(weapon[1]['category'])  
-
-    search_term = st.sidebar.text_input("Weapon name to search")
-    if search_term:
-        weapon_results = game.search_item(weapons, search_term)
-        if not weapon_results.empty:
-            st.subheader(f"Weapons matching '{search_term}':")
-            for index, weapon in weapon_results.iterrows():
-                st.image(weapon['image'], caption=weapon['name'])
-                st.text(weapon['category'])  
-        else:
-            st.write("No weapons found matching that name.")
-
-    game.plot_interactive_weapon_details(average_physical_damage, average_magic_damage, average_holy_damage)
-
-elif selected == "Weight vs Physical Damage":
-    st.header("Weapons Weight")
-
-    weapons_df = pd.read_csv('./data/weapons.csv')
-
-    top_heavy_weapons = weapons_df.nlargest(5, 'weight')
-
-    if len(top_heavy_weapons) < 5:
-        st.error("Not enough weapons data to display top 5 heaviest weapons.")
-    else:
         cols = st.columns(5)
-        for i in range(5): 
+        for i, weapon in enumerate(top_weapons.iterrows()):
             with cols[i]:
-                if i < len(top_heavy_weapons):
-                    st.image(top_heavy_weapons.iloc[i]['image'], caption=top_heavy_weapons.iloc[i]['name'])
-                    st.text(f"Weight: {top_heavy_weapons.iloc[i]['weight']}")
+                st.image(weapon[1]['image'], caption=weapon[1]['name'])
+                st.text(weapon[1]['category'])
 
-    st.header("Weight vs Physical Damage")
-    game.scatter_plot()
+        search_term = st.sidebar.text_input("Weapon name to search")
+        if search_term:
+            weapon_results = game.search_item(weapons, search_term)
+            if not weapon_results.empty:
+                st.subheader(f"Weapons matching '{search_term}':")
+                for index, weapon in weapon_results.iterrows():
+                    st.image(weapon['image'], caption=weapon['name'])
+                    st.text(weapon['category'])
+            else:
+                st.write("No weapons found matching that name.")
 
-elif selected == "Boss Elden Ring":
-    st.header("Boss Elden Ring")
-    
-    st.subheader("Bosses spécifiques")
-    
-    specific_bosses = ['Lichdragon Fortissax', 'Dragonlord Placidusax', 'Mohg, the Omen', 'Shardbearer Malenia']
-    
-    filtered_bosses = bosses[bosses['name'].isin(specific_bosses)]
+        game.plot_interactive_weapon_details(average_physical_damage, average_magic_damage, average_holy_damage)
 
-    cols = st.columns(len(specific_bosses))
+    elif stats_selected == "Weight vs Physical Damage":
+        st.header("Weapons Weight")
+        weapons_df = pd.read_csv('./data/weapons.csv')
+        top_heavy_weapons = weapons_df.nlargest(5, 'weight')
 
-    image_width = 250
-    image_height = 200
-
-    for col, (index, boss) in zip(cols, filtered_bosses.iterrows()):
-        if pd.notna(boss['image']):
-            with col:
-                st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
-                st.text(boss['region'])
-    
-    search_term = st.sidebar.text_input("Nom du boss à rechercher")
-    if search_term:
-        boss_results = bosses[bosses['name'].str.contains(search_term, case=False, na=False)]
-        if not boss_results.empty:
-            st.subheader(f"Bosses correspondant à '{search_term}':")
-
-            search_cols = st.columns(len(specific_bosses))
-            
-            for col, (index, boss) in zip(search_cols, boss_results.iterrows()):
-                if pd.notna(boss['image']):
-                    with col:
-                        st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
-                        st.text(boss['region'])
+        if len(top_heavy_weapons) < 5:
+            st.error("Not enough weapons data to display top 5 heaviest weapons.")
         else:
-            st.write("Aucun boss trouvé avec ce nom.")
-    
-    game.barre_plot_boss()
+            cols = st.columns(5)
+            for i in range(5): 
+                with cols[i]:
+                    if i < len(top_heavy_weapons):
+                        st.image(top_heavy_weapons.iloc[i]['image'], caption=top_heavy_weapons.iloc[i]['name'])
+                        st.text(f"Weight: {top_heavy_weapons.iloc[i]['weight']}")
 
-elif selected == "Dlc Content":
-    video_url_2 = "https://static.bandainamcoent.eu/video/eldenring-kf-01-animated-new.webm"
-    st.markdown(f"""
-        <video width="750" height="450" autoplay loop>
-            <source src="{video_url_2}" type="video/webm">
-            Your browser does not support the video tag.
-        </video>
-    """, unsafe_allow_html=True)
-    
-    st.subheader("Armor Statistics")
-    game.barre_plot_armor('Chest')
-    game.barre_plot_armor('Hands')
-    game.barre_plot_armor('Head')
-    game.barre_plot_armor('Legs')
+        st.header("Weight vs Physical Damage")
+        game.scatter_plot()
 
-    video_url_1 = "https://www.youtube.com/embed/qLZenOn7WUo"
-    st.markdown(f"""
-        <iframe width="750" height="450" src="{video_url_1}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    """, unsafe_allow_html=True)
+    elif stats_selected == "Boss Elden Ring":
+        st.header("Boss Elden Ring")
+        st.subheader("Bosses spécifiques")
+        specific_bosses = ['Lichdragon Fortissax', 'Dragonlord Placidusax', 'Mohg, the Omen', 'Shardbearer Malenia']
+        filtered_bosses = bosses[bosses['name'].isin(specific_bosses)]
+        cols = st.columns(len(specific_bosses))
 
+        image_width = 250
+        image_height = 200
 
+        for col, (index, boss) in zip(cols, filtered_bosses.iterrows()):
+            if pd.notna(boss['image']):
+                with col:
+                    st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
+                    st.text(boss['region'])
 
-elif selected == "Ending":
+        search_term = st.sidebar.text_input("Nom du boss à rechercher")
+        if search_term:
+            boss_results = bosses[bosses['name'].str.contains(search_term, case=False, na=False)]
+            if not boss_results.empty:
+                st.subheader(f"Bosses correspondant à '{search_term}':")
+                search_cols = st.columns(len(specific_bosses))
+                for col, (index, boss) in zip(search_cols, boss_results.iterrows()):
+                    if pd.notna(boss['image']):
+                        with col:
+                            st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
+                            st.text(boss['region'])
+            else:
+                st.write("Aucun boss trouvé avec ce nom.")
+
+        game.barre_plot_boss()
+
+    elif stats_selected == "Dlc Content":
+        video_url_2 = "https://static.bandainamcoent.eu/video/eldenring-kf-01-animated-new.webm"
+        st.markdown(f"""
+            <video width="750" height="450" autoplay loop>
+                <source src="{video_url_2}" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+        """, unsafe_allow_html=True)
+
+        st.subheader("Armor Statistics")
+        game.barre_plot_armor('Chest')
+        game.barre_plot_armor('Hands')
+        game.barre_plot_armor('Head')
+        game.barre_plot_armor('Legs')
+
+        video_url_1 = "https://www.youtube.com/embed/qLZenOn7WUo"
+        st.markdown(f"""
+            <iframe width="750" height="450" src="{video_url_1}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        """, unsafe_allow_html=True)
+
+elif selected == "Elden Vanilla":
+    st.header("Elden Vanilla")
+    vanilla_selected = st.selectbox(
+        "Select a category",
+        ["Weapons", "Armor", "Incantation", "Spell"]
+    )
+
+    if vanilla_selected == "Weapons":
+        st.header("All Weapons")
+        weapons_df = pd.read_csv('./data/weapons.csv')
+        weapons_df['Phy'] = weapons_df['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Phy'), 0))
+
+        search_term = st.sidebar.text_input("Search by Weapon Name")
+        min_weight = st.sidebar.number_input("Minimum Weight", value=0)
+        max_weight = st.sidebar.number_input("Maximum Weight", value=100)
+        min_damage = st.sidebar.number_input("Minimum Physical Damage", value=0)
+        
+        filtered_weapons = weapons_df.copy()
+
+        if search_term:
+            filtered_weapons = game.search_item(filtered_weapons, search_term)
+        
+        filtered_weapons = filtered_weapons[(filtered_weapons['weight'] >= min_weight) & (filtered_weapons['weight'] <= max_weight)]
+        filtered_weapons = filtered_weapons[filtered_weapons['Phy'] >= min_damage]
+
+        st.subheader("Filtered Weapons")
+        cols = st.columns(5)
+        for i, weapon in enumerate(filtered_weapons.iterrows()):
+            with cols[i % 5]:
+                st.image(weapon[1]['image'], caption=weapon[1]['name'])
+                st.text(f"Weight: {weapon[1]['weight']}")
+                st.text(f"Phy Damage: {weapon[1]['Phy']}")
+
+    elif vanilla_selected == "Armor":
+        st.header("Armor")
+        # Add similar search and display functionality for armor
+        pass
+
+    elif vanilla_selected == "Incantation":
+        st.header("Incantation")
+        # Add similar search and display functionality for incantations
+        pass
+
+    elif vanilla_selected == "Spell":
+        st.header("Spell")
+        # Add similar search and display functionality for spells
+        pass
+
+if selected == "Ending":
     st.markdown(
         """
         <div class="video-background">
