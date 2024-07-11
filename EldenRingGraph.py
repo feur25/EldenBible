@@ -256,7 +256,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=800
+            height=700
         )
 
         buttons = []
@@ -338,7 +338,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=800
+            height=700
         )
 
         buttons = []
@@ -421,7 +421,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=800
+            height=700
         )
 
         buttons = []
@@ -498,11 +498,13 @@ class EldenRing:
             ))
 
         fig.update_layout(
-            title='Statistiques des équipements de type "Legs"',
-            xaxis_title='Équipement',
-            yaxis_title='Valeur',
+            title=dict(text='Statistiques des équipements de type "Legs"', font=dict(color='white')),
+            xaxis_title=dict('Équipement', font=dict(color='white')),
+            yaxis_title=dict('Valeur', font=dict(color='white')),
             barmode='group', 
-            height=800
+            plot_bgcolor='rgba(0,0,0,0)', 
+            paper_bgcolor='rgba(0,0,0,0)',
+            height=700
         )
 
         buttons = []
