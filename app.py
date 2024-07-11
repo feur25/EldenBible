@@ -3,76 +3,81 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import EldenRingGraph
 
+class AppLoading:
+    def __init__(self):
+        self.load_data()
 
-ammos = pd.read_csv('./data/ammos.csv')
-armors = pd.read_csv('./data/armors.csv')
-ashes = pd.read_csv('./data/ashes.csv')
-incantations = pd.read_csv('./data/incantations.csv')
-sorceries = pd.read_csv('./data/sorceries.csv')
-talismans = pd.read_csv('./data/talismans.csv')
-classes = pd.read_csv('./data/classes.csv')
-npcs = pd.read_csv('./data/npcs.csv')
-weapons = pd.read_csv('./data/weapons.csv')
-spirits = pd.read_csv('./data/spirits.csv')
-creatures = pd.read_csv('./data/creatures.csv')
-bosses = pd.read_csv('./data/bosses.csv')
-df = pd.read_csv("./data/elden_ring_weapon.csv")
-output_armor = pd.read_csv('./data/output_ammor.csv')
+    def load_game(self):
+        return EldenRingGraph.EldenRing(self.ammos, self.armors, self.ashes, self.incantations, self.sorceries, self.talismans, self.classes, self.npcs, self.weapons, self.spirits, self.creatures, self.bosses, self.df, self.boss_names, self.output_armor)
+    
+    def load_data(self):
+        self.ammos = pd.read_csv('./data/ammos.csv')
+        self.armors = pd.read_csv('./data/armors.csv')
+        self.ashes = pd.read_csv('./data/ashes.csv')
+        self.incantations = pd.read_csv('./data/incantations.csv')
+        self.sorceries = pd.read_csv('./data/sorceries.csv')
+        self.talismans = pd.read_csv('./data/talismans.csv')
+        self.classes = pd.read_csv('./data/classes.csv')
+        self.npcs = pd.read_csv('./data/npcs.csv')
+        self.weapons = pd.read_csv('./data/weapons.csv')
+        self.spirits = pd.read_csv('./data/spirits.csv')
+        self.creatures = pd.read_csv('./data/creatures.csv')
+        self.bosses = pd.read_csv('./data/bosses.csv')
+        self.df = pd.read_csv("./data/elden_ring_weapon.csv")
+        self.output_armor = pd.read_csv('./data/output_ammor.csv')
 
-print(weapons.columns)
+        self.boss_names = {
+            'ACH00': 'Elden Ring',
+            'ACH01': 'Elden Lord',
+            'ACH02': 'Age of the Stars',
+            'ACH03': 'Lord of Frenzied Flame',
+            'ACH04': 'Shardbearer Godrick',
+            'ACH05': 'Shardbearer Radahn',
+            'ACH06': 'Shardbearer Morgott',
+            'ACH07': 'Shardbearer Rykard',
+            'ACH08': 'Shardbearer Malenia',
+            'ACH09': 'Shardbearer Mohg',
+            'ACH10': 'Maliketh the Black Blade',
+            'ACH11': 'Hoarah Loux, Warrior',
+            'ACH12': 'Dragonlord Placidusax',
+            'ACH13': 'God-Slaying Armament',
+            'ACH18': 'Rennala, Queen of the Full Moon',
+            'ACH19': 'Lichdragon Fortissax',
+            'ACH20': 'Godskin Duo',
+            'ACH21': 'Fire Giant',
+            'ACH22': 'Dragonkin Soldier of Nokstella',
+            'ACH23': 'Regal Ancestor Spirit',
+            'ACH24': 'Valiant Gargoyles',
+            'ACH25': 'Margit, the Fell Omen',
+            'ACH26': 'Red Wolf of Radagon',
+            'ACH27': 'Godskin Noble',
+            'ACH28': 'Magma Wyrm Makar',
+            'ACH29': 'Godfrey, First Elden Lord',
+            'ACH30': 'Mohg, the Omen',
+            'ACH31': 'Mimic Tear',
+            'ACH32': 'Loretta, Knight of the Haligtree',
+            'ACH33': 'Astel, Naturalborn of the Void',
+            'ACH34': 'Leonine Misbegotten',
+            'ACH35': 'Royal Knight Loretta',
+            'ACH36': 'Elemer of the Briar',
+            'ACH37': 'Ancestor Spirit',
+            'ACH38': 'Commander Niall',
+            'ACH40': 'Great Rune',
+            'ACH41': 'Erdtree Aflame'
+        }
 
-print(weapons['name'].head())
+        game = self.load_game()
+        self.df = game.replaceZero()
 
-boss_names = {
-    'ACH00': 'Elden Ring',
-    'ACH01': 'Elden Lord',
-    'ACH02': 'Age of the Stars',
-    'ACH03': 'Lord of Frenzied Flame',
-    'ACH04': 'Shardbearer Godrick',
-    'ACH05': 'Shardbearer Radahn',
-    'ACH06': 'Shardbearer Morgott',
-    'ACH07': 'Shardbearer Rykard',
-    'ACH08': 'Shardbearer Malenia',
-    'ACH09': 'Shardbearer Mohg',
-    'ACH10': 'Maliketh the Black Blade',
-    'ACH11': 'Hoarah Loux, Warrior',
-    'ACH12': 'Dragonlord Placidusax',
-    'ACH13': 'God-Slaying Armament',
-    'ACH18': 'Rennala, Queen of the Full Moon',
-    'ACH19': 'Lichdragon Fortissax',
-    'ACH20': 'Godskin Duo',
-    'ACH21': 'Fire Giant',
-    'ACH22': 'Dragonkin Soldier of Nokstella',
-    'ACH23': 'Regal Ancestor Spirit',
-    'ACH24': 'Valiant Gargoyles',
-    'ACH25': 'Margit, the Fell Omen',
-    'ACH26': 'Red Wolf of Radagon',
-    'ACH27': 'Godskin Noble',
-    'ACH28': 'Magma Wyrm Makar',
-    'ACH29': 'Godfrey, First Elden Lord',
-    'ACH30': 'Mohg, the Omen',
-    'ACH31': 'Mimic Tear',
-    'ACH32': 'Loretta, Knight of the Haligtree',
-    'ACH33': 'Astel, Naturalborn of the Void',
-    'ACH34': 'Leonine Misbegotten',
-    'ACH35': 'Royal Knight Loretta',
-    'ACH36': 'Elemer of the Briar',
-    'ACH37': 'Ancestor Spirit',
-    'ACH38': 'Commander Niall',
-    'ACH40': 'Great Rune',
-    'ACH41': 'Erdtree Aflame'
-}
+        self.average_physical_damage, self.average_magic_damage, self.average_holy_damage = game.groupByType()
 
-game = EldenRingGraph.EldenRing(ammos, armors, ashes, incantations, sorceries, talismans, classes, npcs, weapons, spirits, creatures, bosses, df, boss_names, output_armor)
-df = game.replaceZero()
+        def load_css(file_path):
+            with open(file_path) as f:
+                st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-average_physical_damage, average_magic_damage, average_holy_damage = game.groupByType()
+        load_css('./css/styles.css')
 
-def load_css(file_path):
-    with open(file_path) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-load_css('./css/styles.css')
+    
 
 class SteamlitWebSite:
     def __init__(self):
@@ -82,6 +87,8 @@ class SteamlitWebSite:
         self.display_app()
 
     def display_app(self):
+        app_loader = AppLoading()
+        game = app_loader.load_game()
         with st.sidebar:
             selected = option_menu(
                 "Elden Bible",
@@ -122,16 +129,16 @@ class SteamlitWebSite:
 
                 if damage_category == "Physical":
                     st.header("Top 5 Weapons - Physical Damage")
-                    weapons['Phy'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Phy'), 0))
-                    top_weapons = weapons.sort_values(by='Phy', ascending=False).head(5)
+                    app_loader.weapons['Phy'] = app_loader.weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Phy'), 0))
+                    top_weapons = app_loader.weapons.sort_values(by='Phy', ascending=False).head(5)
                 elif damage_category == "Magic":
                     st.header("Top 5 Weapons - Magic Damage")
-                    weapons['Mag'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Mag'), 0))
-                    top_weapons = weapons.sort_values(by='Mag', ascending=False).head(5)
+                    app_loader.weapons['Mag'] = app_loader.weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Mag'), 0))
+                    top_weapons = app_loader.weapons.sort_values(by='Mag', ascending=False).head(5)
                 elif damage_category == "Holy":
                     st.header("Top 5 Weapons - Holy Damage")
-                    weapons['Hol'] = weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Holy'), 0))
-                    top_weapons = weapons.sort_values(by='Hol', ascending=False).head(5)
+                    app_loader.weapons['Hol'] = app_loader.weapons['attack'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Holy'), 0))
+                    top_weapons = app_loader.weapons.sort_values(by='Hol', ascending=False).head(5)
 
                 cols = st.columns(5)
                 for i, weapon in enumerate(top_weapons.iterrows()):
@@ -141,7 +148,7 @@ class SteamlitWebSite:
 
                 search_term = st.sidebar.text_input("Weapon name to search")
                 if search_term:
-                    weapon_results = game.search_item(weapons, search_term)
+                    weapon_results = game.search_item(app_loader.weapons, search_term)
                     if not weapon_results.empty:
                         st.subheader(f"Weapons matching '{search_term}':")
                         for index, weapon in weapon_results.iterrows():
@@ -150,7 +157,7 @@ class SteamlitWebSite:
                     else:
                         st.write("No weapons found matching that name.")
 
-                game.plot_interactive_weapon_details(average_physical_damage, average_magic_damage, average_holy_damage)
+                game.plot_interactive_weapon_details(app_loader.average_physical_damage, app_loader.average_magic_damage, app_loader.average_holy_damage)
 
             elif stats_selected == "Weight vs Physical Damage":
                 st.header("Weapons Weight")
@@ -174,13 +181,13 @@ class SteamlitWebSite:
                 st.header("Boss Elden Ring")
                 st.subheader("Bosses spécifiques")
                 specific_bosses = ['Lichdragon Fortissax', 'Dragonlord Placidusax', 'Mohg, the Omen', 'Shardbearer Malenia']
-                filtered_bosses = bosses[bosses['name'].isin(specific_bosses)]
+                filtered_bosses = app_loader.bosses[app_loader.bosses['name'].isin(specific_bosses)]
                 cols = st.columns(len(specific_bosses))
 
                 image_width = 250
                 image_height = 200
 
-                for col, (index, boss) in zip(cols, filtered_bosses.iterrows()):
+                for col, (_, boss) in zip(cols, filtered_bosses.iterrows()):
                     if pd.notna(boss['image']):
                         with col:
                             st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
@@ -188,11 +195,11 @@ class SteamlitWebSite:
 
                 search_term = st.sidebar.text_input("Nom du boss à rechercher")
                 if search_term:
-                    boss_results = bosses[bosses['name'].str.contains(search_term, case=False, na=False)]
+                    boss_results = app_loader.bosses[app_loader.bosses['name'].str.contains(search_term, case=False, na=False)]
                     if not boss_results.empty:
                         st.subheader(f"Bosses correspondant à '{search_term}':")
                         search_cols = st.columns(len(specific_bosses))
-                        for col, (index, boss) in zip(search_cols, boss_results.iterrows()):
+                        for col, (_, boss) in zip(search_cols, boss_results.iterrows()):
                             if pd.notna(boss['image']):
                                 with col:
                                     st.markdown(f'<img src="{boss["image"]}" alt="{boss["name"]}" style="width: {image_width}px; height: {image_height}px;">', unsafe_allow_html=True)
