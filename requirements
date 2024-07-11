@@ -1,6 +1,6 @@
-plotly
-streamlit
-pandas
-streamlit-option-menu
-requests
-beautifulsoup4
+plotly==5.3.1
+streamlit==1.36.0
+pandas==1.3.3
+streamlit-option-menu==0.8.0
+requests==2.26.0
+beautifulsoup4==4.10.0
