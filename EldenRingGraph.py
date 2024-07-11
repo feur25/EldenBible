@@ -256,7 +256,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=1500
+            height=800
         )
 
         buttons = []
@@ -338,7 +338,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=1500
+            height=800
         )
 
         buttons = []
@@ -421,7 +421,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
-            height=1500
+            height=800
         )
 
         buttons = []
@@ -502,6 +502,7 @@ class EldenRing:
             xaxis_title='Équipement',
             yaxis_title='Valeur',
             barmode='group', 
+            height=800
         )
 
         buttons = []
