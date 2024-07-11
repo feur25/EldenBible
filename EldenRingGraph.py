@@ -222,8 +222,8 @@ class EldenRing:
 
         st.plotly_chart(fig)
 
-    def barre_plot_chest_armor(self):
-        filtered_df = self.output_armor[self.output_armor['type'] == 'Chest']
+    def barre_plot_armor(self, armor_type):
+        filtered_df = self.output_armor[self.output_armor['type'] == armor_type]
 
         fig = go.Figure()
 
@@ -236,10 +236,7 @@ class EldenRing:
                 'brown', 'gray']
 
         for i, stat in enumerate(stats):
-            if stat == "robustness":
-                color = 'gold'  
-            else:
-                color = colors[i % len(colors)]
+            color = 'gold' if stat == "robustness" else colors[i % len(colors)]
             
             fig.add_trace(go.Bar(
                 x=filtered_df['name'],
@@ -250,7 +247,7 @@ class EldenRing:
             ))
 
         fig.update_layout(
-            title=dict(text='Statistiques des équipements de type "Chest"', font=dict(color='white')),
+            title=dict(text=f'Statistiques des équipements de type "{armor_type.capitalize()}"', font=dict(color='white')),
             xaxis_title=dict(text='Équipement', font=dict(color='white')),
             yaxis_title=dict(text='Valeur', font=dict(color='white')),
             barmode='group',
@@ -285,7 +282,7 @@ class EldenRing:
                     y=1.1,
                     xref="paper",
                     yref="paper",
-                    text="Chests Statistics:",
+                    text=f"{armor_type.capitalize()} Statistics:",
                     showarrow=False,
                 )
             ],
@@ -301,254 +298,4 @@ class EldenRing:
                     ),
                 ]
             )
-
         st.plotly_chart(fig)
-
-    def barre_plot_hands_armor(self):
-        filtered_df = self.output_armor[self.output_armor['type'] == 'Hands']
-
-        fig = go.Figure()
-
-        stats = ["weight", "phys.def", "vs.std", "vs.slash", "vs.pierce", 
-                "magic.def", "fire.def", "light.def", "holy.def", 
-                "immunity", "robustness", "focus", "vitality", "poise"]
-
-        colors = ['blue', 'green', 'red', 'purple', 'orange', 'yellow', 
-                'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 
-                'brown', 'gray']
-
-        for i, stat in enumerate(stats):
-            if stat == "robustness":
-                color = 'gold' 
-            else:
-                color = colors[i % len(colors)]
-            
-            fig.add_trace(go.Bar(
-                x=filtered_df['name'],
-                y=filtered_df[stat],
-                name=stat,
-                marker_color=color,
-                visible=(stat == "poise"), 
-            ))
-
-        fig.update_layout(
-            title=dict(text='Statistiques des équipements de type "Hands"', font=dict(color='white')),
-            xaxis_title=dict(text='Équipement', font=dict(color='white')),
-            yaxis_title=dict(text='Valeur', font=dict(color='white')),
-            barmode='group',
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=700
-        )
-
-        buttons = []
-        for stat in stats:
-            button = dict(
-                label=stat,
-                method="update",
-                args=[{"visible": [stat == s for s in stats]}, {"title": f'Statistiques: {", ".join([s for s in stats if stat == s])}'}]
-            )
-            buttons.append(button)
-
-        fig.update_layout(
-            updatemenus=[
-                {
-                    'buttons': [
-                        {'label': 'Afficher tout', 'method': 'update', 'args': [{'visible': [True] * len(fig.data)}]},
-                        {'label': 'Masquer tout', 'method': 'update', 'args': [{'visible': [False] * len(fig.data)}]},
-                    ],
-                    'direction': 'down',
-                    'showactive': True,
-                },
-            ],
-            annotations=[
-                dict(
-                    x=0.5,
-                    y=1.1,
-                    xref="paper",
-                    yref="paper",
-                    text="Hands Statistics:",
-                    showarrow=False,
-                )
-            ],
-        )
-
-        for i, stat in enumerate(stats):
-            fig.update_layout(
-                updatemenus=[
-                    dict(
-                        type="buttons",
-                        direction="down",
-                        buttons=buttons,
-                    ),
-                ]
-            )
-
-        st.plotly_chart(fig)
-
-
-    def barre_plot_head_armor(self):
-        filtered_df = self.output_armor[self.output_armor['type'] == 'Head']
-
-        fig = go.Figure()
-
-        stats = ["weight", "phys.def", "vs.std", "vs.slash", "vs.pierce", 
-                "magic.def", "fire.def", "light.def", "holy.def", 
-                "immunity", "robustness", "focus", "vitality", "poise"]
-
-        colors = ['blue', 'green', 'red', 'purple', 'orange', 'yellow', 
-                'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 
-                'brown', 'gray']
-        
-        for i, stat in enumerate(stats):
-            if stat == "robustness":
-                color = 'gold' 
-            else:
-                color = colors[i % len(colors)]
-            
-            fig.add_trace(go.Bar(
-                x=filtered_df['name'],
-                y=filtered_df[stat],
-                name=stat,
-                marker_color=color,
-                visible=(stat == "poise"), 
-            ))
-
-        fig.update_layout(
-            title=dict(text='Statistiques des équipements de type "Head"', font=dict(color='white')),
-            xaxis_title=dict(text='Équipement', font=dict(color='white')),
-            yaxis_title=dict(text='Valeur', font=dict(color='white')),
-            barmode='group',
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=700
-        )
-
-        buttons = []
-        for stat in stats:
-            button = dict(
-                label=stat,
-                method="update",
-                args=[{"visible": [stat == s for s in stats]}, {"title": f'Statistiques: {", ".join([s for s in stats if stat == s])}'}]
-            )
-            buttons.append(button)
-
-        fig.update_layout(
-            updatemenus=[
-                {
-                    'buttons': [
-                        {'label': 'Afficher tout', 'method': 'update', 'args': [{'visible': [True] * len(fig.data)}]},
-                        {'label': 'Masquer tout', 'method': 'update', 'args': [{'visible': [False] * len(fig.data)}]},
-                    ],
-                    'direction': 'down',
-                    'showactive': True,
-                },
-            ],
-            annotations=[
-                dict(
-                    x=0.5,
-                    y=1.1,
-                    xref="paper",
-                    yref="paper",
-                    text="Heads Statistics:",
-                    showarrow=False,
-                )
-            ],
-        )
-
-        for i, stat in enumerate(stats):
-            fig.update_layout(
-                updatemenus=[
-                    dict(
-                        type="buttons",
-                        direction="down",
-                        buttons=buttons,
-                    ),
-                ]
-            )
-
-        st.plotly_chart(fig)
-
-    def barre_plot_legs_armor(self):
-
-        filtered_df = self.output_armor[self.output_armor['type'] == 'Legs']
-
-        fig = go.Figure()
-
-        stats = ["weight", "phys.def", "vs.std", "vs.slash", "vs.pierce", 
-                "magic.def", "fire.def", "light.def", "holy.def", 
-                "immunity", "robustness", "focus", "vitality", "poise"]
-
-        colors = ['blue', 'green', 'red', 'purple', 'orange', 'yellow', 
-                'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 
-                'brown', 'gray']
-
-        for i, stat in enumerate(stats):
-            if stat == "robustness":
-                color = 'gold' 
-            else:
-                color = colors[i % len(colors)]
-            
-            fig.add_trace(go.Bar(
-                x=filtered_df['name'],
-                y=filtered_df[stat],
-                name=stat,
-                marker_color=color,
-                visible=(stat == "poise"),  
-            ))
-
-        fig.update_layout(
-            title=dict(text='Statistiques des équipements de type "Legs"', font=dict(color='white')),
-            xaxis_title=dict('Équipement', font=dict(color='white')),
-            yaxis_title=dict('Valeur', font=dict(color='white')),
-            barmode='group', 
-            plot_bgcolor='rgba(0,0,0,0)', 
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=700
-        )
-
-        buttons = []
-        for stat in stats:
-            button = dict(
-                label=stat,
-                method="update",
-                args=[{"visible": [stat == s for s in stats]}, {"title": f'Statistiques: {", ".join([s for s in stats if stat == s])}'}]
-            )
-            buttons.append(button)
-
-        fig.update_layout(
-            updatemenus=[
-                {
-                    'buttons': [
-                        {'label': 'Afficher tout', 'method': 'update', 'args': [{'visible': [True] * len(fig.data)}]},
-                        {'label': 'Masquer tout', 'method': 'update', 'args': [{'visible': [False] * len(fig.data)}]},
-                    ],
-                    'direction': 'down',
-                    'showactive': True,
-                },
-            ],
-            annotations=[
-                dict(
-                    x=0.5,
-                    y=1.1,
-                    xref="paper",
-                    yref="paper",
-                    text="Afficher les statistiques:",
-                    showarrow=False,
-                )
-            ],
-        )
-
-        for i, stat in enumerate(stats):
-            fig.update_layout(
-                updatemenus=[
-                    dict(
-                        type="buttons",
-                        direction="down",
-                        buttons=buttons,
-                    ),
-                ]
-            )
-
-        st.plotly_chart(fig)
-
