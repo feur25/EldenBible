@@ -208,9 +208,10 @@ elif selected == "Dlc Content":
     """, unsafe_allow_html=True)
     
     st.subheader("Armor Statistics")
+    game.barre_plot_head_armor()
     game.barre_plot_chest_armor()
     game.barre_plot_hands_armor()
-    game.barre_plot_head_armor()
+    game.barre_plot_legs_armor()
 
     video_url_1 = "https://www.youtube.com/embed/qLZenOn7WUo"
     st.markdown(f"""

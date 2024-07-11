@@ -1,4 +1,7 @@
 /* styles.css */
+header {
+    display: none;
+}
 
 [data-testid="stSidebar"] > div:first-child {
     position: relative;

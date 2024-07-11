@@ -256,6 +256,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
+            height=1500
         )
 
         buttons = []
@@ -337,6 +338,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
+            height=1500
         )
 
         buttons = []
@@ -419,6 +421,7 @@ class EldenRing:
             barmode='group',
             plot_bgcolor='rgba(0,0,0,0)', 
             paper_bgcolor='rgba(0,0,0,0)',
+            height=1500
         )
 
         buttons = []
@@ -448,6 +451,86 @@ class EldenRing:
                     xref="paper",
                     yref="paper",
                     text="Heads Statistics:",
+                    showarrow=False,
+                )
+            ],
+        )
+
+        for i, stat in enumerate(stats):
+            fig.update_layout(
+                updatemenus=[
+                    dict(
+                        type="buttons",
+                        direction="down",
+                        buttons=buttons,
+                    ),
+                ]
+            )
+
+        st.plotly_chart(fig)
+
+    def barre_plot_legs_armor(self):
+
+        filtered_df = self.output_armor[self.output_armor['type'] == 'Legs']
+
+        fig = go.Figure()
+
+        stats = ["weight", "phys.def", "vs.std", "vs.slash", "vs.pierce", 
+                "magic.def", "fire.def", "light.def", "holy.def", 
+                "immunity", "robustness", "focus", "vitality", "poise"]
+
+        colors = ['blue', 'green', 'red', 'purple', 'orange', 'yellow', 
+                'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 
+                'brown', 'gray']
+
+        for i, stat in enumerate(stats):
+            if stat == "robustness":
+                color = 'gold' 
+            else:
+                color = colors[i % len(colors)]
+            
+            fig.add_trace(go.Bar(
+                x=filtered_df['name'],
+                y=filtered_df[stat],
+                name=stat,
+                marker_color=color,
+                visible=(stat == "poise"),  
+            ))
+
+        fig.update_layout(
+            title='Statistiques des équipements de type "Legs"',
+            xaxis_title='Équipement',
+            yaxis_title='Valeur',
+            barmode='group', 
+        )
+
+        buttons = []
+        for stat in stats:
+            button = dict(
+                label=stat,
+                method="update",
+                args=[{"visible": [stat == s for s in stats]}, {"title": f'Statistiques: {", ".join([s for s in stats if stat == s])}'}]
+            )
+            buttons.append(button)
+
+        fig.update_layout(
+            updatemenus=[
+                {
+                    'buttons': [
+                        {'label': 'Afficher tout', 'method': 'update', 'args': [{'visible': [True] * len(fig.data)}]},
+                        {'label': 'Masquer tout', 'method': 'update', 'args': [{'visible': [False] * len(fig.data)}]},
+                    ],
+                    'direction': 'down',
+                    'showactive': True,
+                },
+            ],
+            annotations=[
+                dict(
+                    x=0.5,
+                    y=1.1,
+                    xref="paper",
+                    yref="paper",
+                    text="Afficher les statistiques:",
                     showarrow=False,
                 )
             ],
