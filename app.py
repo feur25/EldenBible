@@ -336,8 +336,45 @@ class SteamlitWebSite:
                 pass
 
             elif vanilla_selected == "Npc":
-                st.header("Npc")
-                pass
+                npc_df = game.npcs
+
+                st.sidebar.title("Filters")
+                search_term = st.sidebar.text_input("Search by NPC Name")
+                location_filter = st.sidebar.selectbox("Filter by Location", sorted(npc_df['location'].dropna().unique()))
+                role_filter = st.sidebar.selectbox("Filter by Role", sorted(npc_df['role'].dropna().unique()))
+
+                if st.sidebar.button("Reset Filters"):
+                    search_term = None
+                    location_filter = "???"
+                    role_filter = " "
+                
+
+                filtered_npc = npc_df.copy()
+
+                if search_term:
+                    filtered_npc = filtered_npc[filtered_npc['name'].str.contains(search_term, case=False)]
+                if location_filter != "???":
+                    filtered_npc = filtered_npc[filtered_npc['location'] == location_filter]
+                if role_filter != " ":
+                    filtered_npc = filtered_npc[filtered_npc['role'] == role_filter]
+
+                st.header(f"All NPCs")
+
+                cols = st.columns(3)
+                for npc in filtered_npc.iterrows():
+                    with cols[filtered_npc.index.get_loc(npc[0]) % 3]:
+                        if pd.notna(npc[1]['image']):
+                            st.image(npc[1]['image'], caption=npc[1]['name'], use_column_width=True)
+                            with st.expander("Description", expanded=False):
+                                st.markdown(f"**Location:** {npc[1]['location']}")
+                                st.markdown(f"**Role:** {npc[1]['role']}")
+                                if pd.notna(npc[1]['quote']):
+                                    st.markdown(f"**Quote:** {npc[1]['quote']}")
+                                else:
+                                    st.text("No quote available")
+                        else:
+                            st.text("Image not available")
+
 
         if selected == "Ending":
             st.markdown(
