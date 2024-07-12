@@ -6,6 +6,7 @@ header {
 [data-testid="stSidebar"] > div:first-child {
     position: relative;
     background-image: url("https://i.ibb.co/WxgjwNB/1151243.jpg");
+    background-attachment: fixed;
     background-size: cover;
     min-height: 100vh;
     z-index: 2;
@@ -24,6 +25,7 @@ header {
 
 [data-testid="stApp"] {
     background-image: url("https://i.ibb.co/DPJqt3r/1186452.jpg");
+    background-attachment: fixed;
     background-size: cover;
     position: relative;
 }
