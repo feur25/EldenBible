@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
 import EldenRingGraph
+import ast
 
 class AppLoading:
     def __init__(self):
@@ -161,8 +162,7 @@ class SteamlitWebSite:
 
             elif stats_selected == "Weight vs Physical Damage":
                 st.header("Weapons Weight")
-                weapons_df = pd.read_csv('./data/weapons.csv')
-                top_heavy_weapons = weapons_df.nlargest(5, 'weight')
+                top_heavy_weapons = game.weapons.nlargest(5, 'weight')
 
                 if len(top_heavy_weapons) < 5:
                     st.error("Not enough weapons data to display top 5 heaviest weapons.")
@@ -300,7 +300,7 @@ class SteamlitWebSite:
 
                 search_term = st.sidebar.text_input("Search by Incantation Name")
                 min_cost = st.sidebar.number_input("Minimum Cost", value=0)
-                max_cost = st.sidebar.number_input("Maximum Cost", value=100000)
+                max_cost = st.sidebar.number_input("Maximum Cost", value=100)
                 min_faith = st.sidebar.number_input("Minimum Faith Requirement", value=0)
 
                 filtered_incantations = incantations_df.copy()
@@ -309,7 +309,10 @@ class SteamlitWebSite:
                     filtered_incantations = filtered_incantations[filtered_incantations['name'].str.contains(search_term, case=False)]
 
                 filtered_incantations = filtered_incantations[(filtered_incantations['cost'] >= min_cost) & (filtered_incantations['cost'] <= max_cost)]
-                filtered_incantations['faith'] = filtered_incantations['requires'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Faith'), 0))
+
+                filtered_incantations['requires'] = filtered_incantations['requires'].fillna('[]')
+
+                filtered_incantations['faith'] = filtered_incantations['requires'].apply(lambda x: next((d['amount'] for d in ast.literal_eval(x) if d['name'] == 'Faith'), 0))
                 filtered_incantations = filtered_incantations[filtered_incantations['faith'] >= min_faith]
 
                 cols = st.columns(3)
@@ -317,8 +320,12 @@ class SteamlitWebSite:
                     with cols[filtered_incantations.index.get_loc(incantation[0]) % 3]:
                         if pd.notna(incantation[1]['image']):
                             st.image(incantation[1]['image'], caption=incantation[1]['name'], use_column_width=True)
-                            with st.expander("description", expanded=False):
+                            with st.expander("Description", expanded=False):
                                 st.markdown(f"**Description:** {incantation[1]['description']}")
+                                st.markdown(f"**Effects:** {incantation[1]['effects']}")
+                                requires_str = " || ".join([f"{req['name']}: {req['amount']}" for req in ast.literal_eval(incantation[1]['requires'])])
+                                st.markdown(f"**Requires:** {requires_str}")
+                                st.markdown(f"**Slot:** {incantation[1]['slots']}")
                                 st.text(f"Cost: {incantation[1]['cost']}")
                                 st.text(f"Faith Requirement: {incantation[1]['faith']}")
                         else:
