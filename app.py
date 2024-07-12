@@ -295,8 +295,34 @@ class SteamlitWebSite:
 
 
             elif vanilla_selected == "Incantation":
-                st.header("Incantation")
-                pass
+                st.header("All Incantations")
+                incantations_df = game.incantations
+
+                search_term = st.sidebar.text_input("Search by Incantation Name")
+                min_cost = st.sidebar.number_input("Minimum Cost", value=0)
+                max_cost = st.sidebar.number_input("Maximum Cost", value=100000)
+                min_faith = st.sidebar.number_input("Minimum Faith Requirement", value=0)
+
+                filtered_incantations = incantations_df.copy()
+
+                if search_term:
+                    filtered_incantations = filtered_incantations[filtered_incantations['name'].str.contains(search_term, case=False)]
+
+                filtered_incantations = filtered_incantations[(filtered_incantations['cost'] >= min_cost) & (filtered_incantations['cost'] <= max_cost)]
+                filtered_incantations['faith'] = filtered_incantations['requires'].apply(lambda x: next((d['amount'] for d in eval(x) if d['name'] == 'Faith'), 0))
+                filtered_incantations = filtered_incantations[filtered_incantations['faith'] >= min_faith]
+
+                cols = st.columns(3)
+                for incantation in filtered_incantations.iterrows():
+                    with cols[filtered_incantations.index.get_loc(incantation[0]) % 3]:
+                        if pd.notna(incantation[1]['image']):
+                            st.image(incantation[1]['image'], caption=incantation[1]['name'], use_column_width=True)
+                            with st.expander("description", expanded=False):
+                                st.markdown(f"**Description:** {incantation[1]['description']}")
+                                st.text(f"Cost: {incantation[1]['cost']}")
+                                st.text(f"Faith Requirement: {incantation[1]['faith']}")
+                        else:
+                            st.text("Image not available")
 
             elif vanilla_selected == "Spell":
                 st.header("Spell")
